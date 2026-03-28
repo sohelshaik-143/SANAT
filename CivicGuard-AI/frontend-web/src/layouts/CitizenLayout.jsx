@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { ShieldAlert, User, LogOut, Home, FileText } from 'lucide-react';
+import { ShieldAlert, User, LogOut, Home, FileText, Users } from 'lucide-react';
 import './CitizenLayout.css';
 
 const CitizenLayout = () => {

@@ -53,7 +53,7 @@ const Community = () => {
                 </div>
                 <span className="text-xs text-muted">{post.time}</span>
               </div>
-              
+
               <p className="text-secondary text-sm leading-relaxed mb-6">
                 "{post.content}"
               </p>

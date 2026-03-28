@@ -319,6 +319,30 @@ const CitizenDashboard = () => {
             </form>
           )}
 
+          {/* New: How it Works section for premium feel */}
+          <div className="how-it-works glass-panel mt-6 p-6">
+            <h3 className="text-sm font-bold flex items-center gap-2 mb-4">
+              <ShieldCheck size={16} className="text-accent" /> How CivicGuard AI Works
+            </h3>
+            <div className="steps-row flex justify-between gap-4">
+              {[
+                { icon: '📸', label: 'Snap', desc: 'Real photo' },
+                { icon: '🤖', label: 'Analyze', desc: 'AI Scans' },
+                { icon: '📍', label: 'Locate', desc: 'GPS Tag' },
+                { icon: '🚀', label: 'Track', desc: 'Auto-Route' }
+              ].map((step, i) => (
+                <div key={i} className="step-item text-center">
+                  <div className="step-icon text-xl mb-1">{step.icon}</div>
+                  <div className="step-label text-[10px] font-bold uppercase tracking-wider">{step.label}</div>
+                  <div className="step-desc text-[9px] text-muted">{step.desc}</div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted mt-4 text-center opacity-60">
+              Our AI engine ensures 99.9% authenticity in civic reporting.
+            </p>
+          </div>
+
           {aiState === 'analyzing' && (
             <div className="ai-state-view analyzing animate-fade-in">
               <div className="ai-scanner">
