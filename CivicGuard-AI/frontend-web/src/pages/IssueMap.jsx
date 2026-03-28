@@ -186,9 +186,17 @@ const IssueMap = () => {
                 </div>
                 <button onClick={() => setSelectedIssue(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
               </div>
-              <p style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 10 }}>
+              <p style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                 <MapPin size={12} /> {selectedIssue.location}
               </p>
+              <a 
+                href={`https://www.google.com/maps/search/?api=1&query=${selectedIssue.lat},${selectedIssue.lng}`}
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ fontSize: '0.72rem', color: 'var(--accent-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: 12 }}
+              >
+                Open in Google Maps ↗
+              </a>
               <span className={`badge ${{
                 Resolved: 'badge-success', Escalated: 'badge-danger', 'In Progress': 'badge-info'
               }[selectedIssue.status] || 'badge-warning'}`}>

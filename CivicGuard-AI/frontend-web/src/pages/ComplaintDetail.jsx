@@ -174,7 +174,17 @@ const ComplaintDetail = () => {
                 {currentStatus}
               </span>
               <span className="meta-item"><Calendar size={14} /> Reported {complaintData.date}</span>
-              <span className="meta-item"><MapPin size={14} /> {complaintData.location}</span>
+              <span className="meta-item">
+                <MapPin size={14} /> {complaintData.location}
+                <a 
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(complaintData.location)}`}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ marginLeft: 8, fontSize: '0.7rem', color: 'var(--accent-primary)', textDecoration: 'none' }}
+                >
+                  (Google Maps ↗)
+                </a>
+              </span>
             </div>
           </div>
           <div className="action-buttons">

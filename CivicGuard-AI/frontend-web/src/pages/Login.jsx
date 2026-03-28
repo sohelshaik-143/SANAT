@@ -232,7 +232,7 @@ const Login = () => {
                   <label className="flex items-center gap-2 text-xs text-muted cursor-pointer">
                     <input type="checkbox" /> Remember me
                   </label>
-                  <a href="#" className="text-xs">
+                  <a href="#" className="text-xs" onClick={(e) => { e.preventDefault(); setError("Demo Mode: Multi-factor authentication is currently managed via simulated State SSO. Contact administrator for password resets."); }}>
                     {role === 'citizen' ? 'Login via OTP instead?' : 'Forgot password?'}
                   </a>
                 </div>
