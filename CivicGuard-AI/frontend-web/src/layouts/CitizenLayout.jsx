@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { ShieldAlert, User, LogOut, Home, FileText } from 'lucide-react';
+import { ShieldAlert, User, LogOut, Home, FileText, Users } from 'lucide-react';
 import './CitizenLayout.css';
 
 const CitizenLayout = () => {
@@ -15,10 +15,16 @@ const CitizenLayout = () => {
         </div>
 
         <nav className="citizen-nav">
-          <Link to="/citizen" className="nav-link active"><Home size={18} /> Home</Link>
+          <Link to="/citizen" className="nav-link"><Home size={18} /> Dashboard</Link>
+          <Link to="/citizen/community" className="nav-link"><Users size={18} /> Community</Link>
           <a href="#reports" className="nav-link" onClick={(e) => {
             e.preventDefault();
-            document.querySelector('.history-section')?.scrollIntoView({behavior: 'smooth'});
+            if (window.location.pathname !== '/citizen') {
+              navigate('/citizen');
+              setTimeout(() => document.querySelector('.history-section')?.scrollIntoView({behavior: 'smooth'}), 100);
+            } else {
+              document.querySelector('.history-section')?.scrollIntoView({behavior: 'smooth'});
+            }
           }}><FileText size={18} /> My Reports</a>
         </nav>
 

@@ -11,6 +11,7 @@ import IssueMap from './pages/IssueMap'
 import Resolved from './pages/Resolved'
 import Reports from './pages/Reports'
 import Settings from './pages/Settings'
+import Community from './pages/Community'
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         {/* Citizen Routes inside CitizenLayout */}
         <Route path="/citizen" element={<CitizenLayout />}>
           <Route index element={<CitizenDashboard />} />
+          <Route path="community" element={<Community />} />
           <Route path="*" element={<Navigate to="/citizen" replace />} />
         </Route>
       </Routes>

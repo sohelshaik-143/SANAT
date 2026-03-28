@@ -34,6 +34,7 @@ const ComplaintDetail = () => {
         const response = await apiClient.get(`/complaints/${id}`);
         const c = response.data;
         const mapped = {
+
           id: c.ticketNumber || c.id,
           type: c.category || 'Civic Issue',
           location: c.address || 'Unknown',
@@ -43,6 +44,19 @@ const ComplaintDetail = () => {
           description: c.description || "No description provided",
           reporter: "Citizen Participant",
           department: c.assignedDepartment || "General Dept"
+
+           id: c.ticketNumber || c.id,
+           type: c.category || 'Civic Issue',
+           location: c.address || 'Unknown',
+           aiConfidence: c.authenticityScore ? Math.round(c.authenticityScore * 100) : 95,
+           status: c.status || 'Pending',
+           date: c.submittedAt ? new Date(c.submittedAt).toLocaleString() : new Date().toLocaleString(),
+           description: c.description || "No description provided",
+           reporter: "Citizen Participant",
+           department: c.assignedDepartment || "General Dept",
+           originalImage: c.originalImagePath ? `http://localhost:8080/api/uploads/${c.originalImagePath.split(/[\\/]/).pop()}` : null,
+           resolutionImage: c.resolutionImagePath ? `http://localhost:8080/api/uploads/resolutions/${c.resolutionImagePath.split(/[\\/]/).pop()}` : null
+
         };
         setComplaintData(mapped);
         setIsResolved(mapped.status === 'Resolved');
@@ -184,7 +198,17 @@ const ComplaintDetail = () => {
                 {currentStatus}
               </span>
               <span className="meta-item"><Calendar size={14} /> Reported {complaintData.date}</span>
-              <span className="meta-item"><MapPin size={14} /> {complaintData.location}</span>
+              <span className="meta-item">
+                <MapPin size={14} /> {complaintData.location}
+                <a 
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(complaintData.location)}`}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ marginLeft: 8, fontSize: '0.7rem', color: 'var(--accent-primary)', textDecoration: 'none' }}
+                >
+                  (Google Maps ↗)
+                </a>
+              </span>
             </div>
           </div>
           <div className="action-buttons">
@@ -253,6 +277,7 @@ const ComplaintDetail = () => {
                 <div className="media-section">
                   <h3>Citizen Uploads</h3>
                   <div className="image-grid">
+
                     <div className="image-card" style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
                       {complaintData.imageUrl ? (
                         <img src={complaintData.imageUrl} alt="Citizen Verification Proof" style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '8px' }} />
@@ -264,6 +289,28 @@ const ComplaintDetail = () => {
                       <p className="image-caption" style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Evidence_Capture_01.jpg</span>
                         <ShieldCheck size={16} className="text-success inline-icon" />
+
+                    <div className="image-card">
+                      {complaintData.originalImage ? (
+                        <img 
+                          src={complaintData.originalImage} 
+                          alt="Citizen Upload" 
+                          className="evidence-image"
+                          style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                          }}
+                        />
+                      ) : (
+                        <div className="image-placeholder bg-dark">
+                          <ImageIcon size={32} className="text-muted" />
+                        </div>
+                      )}
+                      <p className="image-caption">
+                        {complaintData.originalImage ? 'Verified Evidence' : 'No photo uploaded'} 
+                        <ShieldCheck size={14} className="text-success inline-icon" />
+
                       </p>
                     </div>
                   </div>

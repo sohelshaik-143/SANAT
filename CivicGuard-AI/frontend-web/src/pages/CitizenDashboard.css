@@ -34,16 +34,32 @@
   font-weight: 600;
 }
 
-.mb-0 { margin-bottom: 0; }
-.px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
-.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
-.gap-3 { gap: 0.75rem; }
-.gap-4 { gap: 1rem; }
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
 
 .upload-box {
   border: 2px dashed rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   transition: all 0.2s;
   margin-bottom: 1.5rem;
   position: relative;
@@ -116,10 +132,23 @@
 }
 
 @keyframes scan {
-  0% { top: 0; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
 .scan-progress {
@@ -127,8 +156,13 @@
 }
 
 @keyframes load {
-  0% { width: 0%; }
-  100% { width: 100%; }
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
 }
 
 .icon-circle {
@@ -141,11 +175,25 @@
   margin-bottom: 1.5rem;
 }
 
-.bg-success-dim { background: rgba(16, 185, 129, 0.1); }
-.bg-danger-dim { background: rgba(239, 68, 68, 0.1); }
-.max-w-sm { max-width: 320px; }
-.max-w-xs { max-width: 240px; }
-.mt-6 { margin-top: 1.5rem; }
+.bg-success-dim {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.bg-danger-dim {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.max-w-sm {
+  max-width: 320px;
+}
+
+.max-w-xs {
+  max-width: 240px;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
 
 .ticket-card {
   margin-top: 1.5rem;

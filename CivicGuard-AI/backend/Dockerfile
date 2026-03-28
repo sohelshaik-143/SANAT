@@ -4,7 +4,7 @@
 # ═══════════════════════════════════════════
 
 # Stage 1: Build
-FROM maven:3.9-eclipse-temurin-21 AS builder
+FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /build
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
@@ -12,7 +12,7 @@ COPY src ./src
 RUN mvn package -DskipTests -B
 
 # Stage 2: Runtime
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 LABEL maintainer="CivicGuard Team <civicguard@gov.in>"
 LABEL description="CivicGuard-AI Backend - Civic Issue Monitoring API"
 
