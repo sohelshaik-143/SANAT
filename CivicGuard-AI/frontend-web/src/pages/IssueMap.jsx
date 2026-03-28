@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, AlertTriangle } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, CircleMarker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { getComplaints } from '../data/mockData';
 import apiClient from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
+
+const MapUpdater = ({ center }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (center && map) {
+      map.flyTo(center, 15, { animate: true, duration: 1.5 });
+    }
+  }, [center, map]);
+  return null;
+};
 
 // Fix leaflet default icon paths broken by vite bundling
 delete L.Icon.Default.prototype._getIconUrl;
@@ -43,15 +53,15 @@ const IssueMap = () => {
           location: c.address || 'Unknown',
           status: c.status || 'Pending',
           description: c.description || '',
-          lat: c.latitude && c.latitude !== 0 ? c.latitude : 12.9716 + (Math.random() - 0.5) * 0.08,
-          lng: c.longitude && c.longitude !== 0 ? c.longitude : 77.5946 + (Math.random() - 0.5) * 0.08,
+          lat: c.latitude && c.latitude !== 0 ? c.latitude : (c.lat || 12.9716),
+          lng: c.longitude && c.longitude !== 0 ? c.longitude : (c.lng || 77.5946),
         })));
       } catch {
-        const mock = getComplaints().map((c, i) => ({
+        const mock = getComplaints().map((c) => ({
           ...c,
           type: c.type || 'Civic Issue',
-          lat: 12.9716 + (Math.random() - 0.5) * 0.08,
-          lng: 77.5946 + (Math.random() - 0.5) * 0.08,
+          lat: c.lat || 12.9716,
+          lng: c.lng || 77.5946,
         }));
         setComplaints(mock);
       }
@@ -63,7 +73,12 @@ const IssueMap = () => {
     ? complaints
     : complaints.filter(c => c.type === selectedCategory);
 
-  const mapCenter = [12.9716, 77.5946];
+  // Only show unresolved markers on the map
+  const activeMarkers = filtered.filter(c => c.status !== 'Resolved');
+
+  const pendingIssues = activeMarkers.filter(c => c.status === 'Pending' || c.status === 'In Progress');
+  const activeCenterItem = pendingIssues.length > 0 ? pendingIssues[0] : (activeMarkers.length > 0 ? activeMarkers[0] : null);
+  const mapCenter = activeCenterItem ? [activeCenterItem.lat, activeCenterItem.lng] : [12.9716, 77.5946];
 
   return (
     <div className="dashboard-container animate-fade-in">
@@ -102,14 +117,15 @@ const IssueMap = () => {
         <div style={{ borderRadius: '12px', overflow: 'hidden', height: '540px', position: 'relative', border: '1px solid rgba(255,255,255,0.08)' }}>
           <MapContainer
             center={mapCenter}
-            zoom={13}
+            zoom={14}
             style={{ height: '100%', width: '100%' }}
           >
+            <MapUpdater center={mapCenter} />
             <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
-            {filtered.map(c => (
+            {activeMarkers.map(c => (
               <CircleMarker
                 key={c.id}
                 center={[c.lat, c.lng]}

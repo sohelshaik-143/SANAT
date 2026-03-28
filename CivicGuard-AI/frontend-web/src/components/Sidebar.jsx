@@ -1,9 +1,9 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Map as MapIcon, 
-  AlertTriangle, 
+import {
+  LayoutDashboard,
+  Map as MapIcon,
+  AlertTriangle,
   CheckCircle,
   FileText,
   Settings,
@@ -26,16 +26,31 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <div className="sidebar-profile">
-        <div className="profile-initial">{user.name.charAt(0)}</div>
-        <div className="profile-info">
-          <p className="profile-name">{user.name}</p>
-          <p className="profile-role">Gov. Official</p>
-        </div>
-      </div>
 
       <div className="sidebar-content">
         <nav className="nav-menu">
+
+          <p className="nav-label">MAIN MENU</p>
+          <NavLink to="/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <LayoutDashboard size={20} />
+            <span>Dashboard</span>
+          </NavLink>
+          <NavLink to="/issues" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <AlertTriangle size={20} />
+            <span>Active Issues</span>
+          </NavLink>
+          <NavLink to="/map" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <MapIcon size={20} />
+            <span>Issue Map</span>
+          </NavLink>
+          <NavLink to="/resolved" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <CheckCircle size={20} />
+            <span>Resolved</span>
+          </NavLink>
+          <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <FileText size={20} />
+            <span>Reports (RTI)</span>
+
           <p className="nav-label">COMMAND CENTER</p>
           <NavLink to="/dashboard" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
             <LayoutDashboard size={20} />
@@ -44,12 +59,13 @@ const Sidebar = () => {
           <NavLink to="/community" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
             <Users size={20} />
             <span>Community Pulse</span>
+
           </NavLink>
         </nav>
 
         <nav className="nav-menu mt-auto">
           <p className="nav-label">PREFERENCES</p>
-          <NavLink to="/settings" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <Settings size={20} />
             <span>Settings</span>
           </NavLink>

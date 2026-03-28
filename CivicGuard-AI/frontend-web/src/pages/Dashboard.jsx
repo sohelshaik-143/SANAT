@@ -1,7 +1,7 @@
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
   ShieldAlert,
   ArrowUpRight,
   ArrowDownRight,
@@ -15,7 +15,11 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+
+import { getComplaints, clearAllComplaints } from '../data/mockData';
+=======
 import { getComplaints, getOfficers } from '../data/mockData';
+
 import apiClient from '../api/apiClient';
 import IssueMap from './IssueMap';
 import Reports from './Reports';
@@ -40,8 +44,11 @@ const StatCard = ({ title, value, icon, trend, trendValue, type }) => (
 );
 
 const getStatusBadgeClass = (status) => {
+
+  switch (status) {
+
   switch(status) {
-    case 'RESOLVED':
+
     case 'Resolved': return 'badge-success';
     case 'ESCALATED':
     case 'Escalated': return 'badge-danger';
@@ -85,6 +92,23 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
+
+
+    fetchComplaints();
+  }, []);
+
+  const activeCount = complaints.filter(c => c.status && c.status !== 'Resolved').length;
+  const verifiedCount = complaints.length > 0 ? (complaints.reduce((acc, curr) => acc + (curr.aiConfidence || 95), 0) / complaints.length).toFixed(1) + '%' : '0.0%';
+  const escalatedCount = complaints.filter(c => c.status && c.status.includes('Escalated')).length;
+  const resolvedCount = complaints.filter(c => c.status === 'Resolved').length;
+
+  const handleResetData = () => {
+    if (window.confirm('⚠️ This will permanently delete all reported issues. Are you sure?')) {
+      clearAllComplaints();
+      setComplaints([]);
+    }
+  };
+
     fetchData();
   }, []);
 
@@ -94,6 +118,7 @@ const Dashboard = () => {
     c.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+
   return (
     <div className="dashboard-container animate-fade-in">
       <div className="dashboard-header-flex">
@@ -101,6 +126,64 @@ const Dashboard = () => {
           <h1 className="page-title">Command Center</h1>
           <p className="page-subtitle">Unified official oversight and AI verification console</p>
         </div>
+
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <select className="input-field" value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
+            <option>All Time</option>
+            <option>Today</option>
+            <option>This Month</option>
+          </select>
+          <button
+            onClick={handleResetData}
+            className="btn btn-secondary btn-sm"
+            style={{ background: 'rgba(239,68,68,0.12)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', whiteSpace: 'nowrap' }}
+          >
+            🗑 Reset Data
+          </button>
+        </div>
+      </div>
+
+      <div className="stat-grid">
+        <StatCard
+          title="Active Issues"
+          value={activeCount.toString()}
+          icon={<AlertTriangle size={24} />}
+          trend="up"
+          trendValue="Live Sync"
+          type="warning"
+        />
+        <StatCard
+          title="Avg AI Verified"
+          value={verifiedCount}
+          icon={<ShieldAlert size={24} />}
+          trend="up"
+          trendValue="System Avg."
+          type="info"
+        />
+        <StatCard
+          title="Escalated"
+          value={escalatedCount.toString()}
+          icon={<Clock size={24} />}
+          trend="down"
+          trendValue="Live Sync"
+          type="danger"
+        />
+        <StatCard
+          title="Resolved"
+          value={resolvedCount.toString()}
+          icon={<CheckCircle size={24} />}
+          trend="up"
+          trendValue="Live Sync"
+          type="success"
+        />
+      </div>
+
+      <div className="dashboard-main-content">
+        <div className="recent-complaints glass-panel">
+          <div className="panel-header">
+            <h2 className="panel-title">Live Reports <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>({dateFilter})</span></h2>
+            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/issues')}>View All</button>
+
         <div className="tab-navigation glass-panel">
           <button className={`nav-tab ${activeTab === 'feed' ? 'active' : ''}`} onClick={() => setActiveTab('feed')}><LayoutGrid size={16}/> Live Feed</button>
           <button className={`nav-tab ${activeTab === 'map' ? 'active' : ''}`} onClick={() => setActiveTab('map')}><MapIcon size={16}/> Heatmap</button>
@@ -116,6 +199,7 @@ const Dashboard = () => {
             <StatCard title="AI Confirmed" value="98.2%" icon={<ShieldAlert size={24} />} trend="up" trendValue="1.5%" type="info" />
             <StatCard title="Escalations" value="12" icon={<Clock size={24} />} trend="up" trendValue="2%" type="danger" />
             <StatCard title="Goal Status" value="On Track" icon={<CheckCircle size={24} />} trend="up" trendValue="10%" type="success" />
+
           </div>
 
           <div className="recent-complaints glass-panel p-6">
@@ -142,7 +226,17 @@ const Dashboard = () => {
                     <th>Submission</th>
                     <th>Actions</th>
                   </tr>
-                </thead>
+
+                ) : complaints.map(complaint => (
+                  <tr key={complaint.id}>
+                    <td className="font-medium">{complaint.id}</td>
+                    <td>{complaint.type}</td>
+                    <td><span className="text-truncate">{complaint.location}</span></td>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        <div className="progress-bar-bg">
+                          <div className="progress-bar-fill" style={{ width: `${complaint.aiConfidence}%` }}></div>
+       </thead>
                 <tbody>
                   {filteredComplaints.length === 0 ? (
                     <tr><td colSpan="7" className="text-center p-12 text-muted">No cases matching your criteria.</td></tr>
@@ -157,6 +251,7 @@ const Dashboard = () => {
                             <div className="h-full bg-accent" style={{width: `${c.aiConfidence}%`}}></div>
                           </div>
                           <span className="text-[10px] font-bold">{c.aiConfidence}%</span>
+
                         </div>
                       </td>
                       <td><span className={`badge ${getStatusBadgeClass(c.status)}`}>{c.status}</span></td>
@@ -170,6 +265,18 @@ const Dashboard = () => {
           </div>
         </>
       )}
+
+
+        <div className="heatmap-widget glass-panel" style={{ cursor: 'pointer' }} onClick={() => navigate('/map')}>
+          <div className="panel-header">
+            <h2 className="panel-title">Severity Heatmap</h2>
+            <span style={{ fontSize: '0.75rem', color: 'var(--accent-primary)' }}>Click to open map →</span>
+          </div>
+          <div className="heatmap-placeholder">
+            <div className="map-overlay">
+              <MapIcon size={48} className="pulse-icon" />
+              <p>Live Map Integration Enabled</p>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 4 }}>Tap to view all markers</p>
 
       {activeTab === 'map' && <div className="h-[600px] rounded-2xl overflow-hidden shadow-2xl"><IssueMap /></div>}
 
@@ -195,6 +302,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <button className="btn btn-secondary w-full mt-6 text-xs py-2">View Performance Details</button>
+
             </div>
           ))}
         </div>
