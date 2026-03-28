@@ -1,11 +1,11 @@
 {
   "java.configuration.runtimes": [
     {
-      "name": "JavaSE-21",
-      "path": "C:\\Users\\Lenovo\\.appcat\\justj",
+      "name": "JavaSE-17",
+      "path": "C:\\Users\\Lenovo\\.jdk\\jdk-17.0.16",
       "default": true
     }
   ],
-  "java.jdt.ls.java.home": "C:\\Users\\Lenovo\\.appcat\\justj",
+  "java.jdt.ls.java.home": "C:\\Users\\Lenovo\\.jdk\\jdk-17.0.16",
   "maven.terminal.useJavaHome": true
 }
