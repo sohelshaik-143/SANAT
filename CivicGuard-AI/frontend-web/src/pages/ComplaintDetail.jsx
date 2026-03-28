@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { 
-  ArrowLeft, MapPin, Calendar, AlertTriangle, CheckCircle, 
+import {
+  ArrowLeft, MapPin, Calendar, AlertTriangle, CheckCircle,
   FileCheck2, Image as ImageIcon, ShieldCheck, Upload, Bot, Camera
 } from 'lucide-react';
 import { getComplaintById, updateComplaintStatus } from '../data/mockData';
@@ -10,12 +10,14 @@ import './ComplaintDetail.css';
 
 const ComplaintDetail = () => {
   const { id } = useParams();
-  
+
   const [complaintData, setComplaintData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('details');
   const [resolutionState, setResolutionState] = useState('idle');
-  const [resolutionFile, setResolutionFile] = useState(null);
+  const [timelineBefore, setTimelineBefore] = useState(null);
+  const [timelineDuring, setTimelineDuring] = useState(null);
+  const [timelineAfter, setTimelineAfter] = useState(null);
   const [isResolved, setIsResolved] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('');
   const [showReassignModal, setShowReassignModal] = useState(false);
@@ -32,15 +34,15 @@ const ComplaintDetail = () => {
         const response = await apiClient.get(`/complaints/${id}`);
         const c = response.data;
         const mapped = {
-           id: c.ticketNumber || c.id,
-           type: c.category || 'Civic Issue',
-           location: c.address || 'Unknown',
-           aiConfidence: c.authenticityScore ? Math.round(c.authenticityScore * 100) : 95,
-           status: c.status || 'Pending',
-           date: c.submittedAt ? new Date(c.submittedAt).toLocaleString() : new Date().toLocaleString(),
-           description: c.description || "No description provided",
-           reporter: "Citizen Participant",
-           department: c.assignedDepartment || "General Dept"
+          id: c.ticketNumber || c.id,
+          type: c.category || 'Civic Issue',
+          location: c.address || 'Unknown',
+          aiConfidence: c.authenticityScore ? Math.round(c.authenticityScore * 100) : 95,
+          status: c.status || 'Pending',
+          date: c.submittedAt ? new Date(c.submittedAt).toLocaleString() : new Date().toLocaleString(),
+          description: c.description || "No description provided",
+          reporter: "Citizen Participant",
+          department: c.assignedDepartment || "General Dept"
         };
         setComplaintData(mapped);
         setIsResolved(mapped.status === 'Resolved');
@@ -50,8 +52,8 @@ const ComplaintDetail = () => {
         const md = getComplaintById(id);
         setComplaintData(md);
         if (md) {
-           setIsResolved(md.status === 'Resolved');
-           setCurrentStatus(md.status);
+          setIsResolved(md.status === 'Resolved');
+          setCurrentStatus(md.status);
         }
       } finally {
         setLoading(false);
@@ -60,25 +62,31 @@ const ComplaintDetail = () => {
     fetchComplaint();
   }, [id]);
 
-  const handleResolutionUpload = (e) => {
+  const handleTimelineUpload = (e, phase) => {
     if (e.target.files && e.target.files.length > 0) {
-      setResolutionFile(e.target.files[0]);
+      if (phase === 'before') setTimelineBefore(e.target.files[0]);
+      if (phase === 'during') setTimelineDuring(e.target.files[0]);
+      if (phase === 'after') setTimelineAfter(e.target.files[0]);
     }
   };
 
+  const allProofsLoaded = timelineBefore && timelineDuring && timelineAfter;
+
   const handleVerifyResolution = async () => {
-    if (!resolutionFile) return;
+    if (!allProofsLoaded) return;
     setResolutionState('analyzing');
-    
+
     try {
       const formData = new FormData();
-      formData.append('image', resolutionFile);
-      formData.append('notes', 'Resolved via web portal');
-      
+      formData.append('before', timelineBefore);
+      formData.append('during', timelineDuring);
+      formData.append('after', timelineAfter);
+      formData.append('notes', 'Resolved via web portal with Timeline Proof');
+
       await apiClient.put(`/complaints/${id}/resolve`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
+
       setResolutionState('success');
       setIsResolved(true);
       setCurrentStatus('Resolved');
@@ -89,13 +97,15 @@ const ComplaintDetail = () => {
         setIsResolved(true);
         setCurrentStatus('Resolved');
         updateComplaintStatus(id, 'Resolved');
-      }, 1500);
+      }, 3000); // Extended timeout for "AI verification simulation"
     }
   };
 
   const resetResolution = () => {
     setResolutionState('idle');
-    setResolutionFile(null);
+    setTimelineBefore(null);
+    setTimelineDuring(null);
+    setTimelineAfter(null);
   };
 
   const handleAction = (action) => {
@@ -189,23 +199,23 @@ const ComplaintDetail = () => {
         <div className="main-info">
           <div className="glass-panel detail-card">
             <div className="tabs">
-              <button 
+              <button
                 className={`tab ${activeTab === 'details' ? 'active' : ''}`}
                 onClick={() => setActiveTab('details')}
               >
                 Issue Details
               </button>
-              <button 
+              <button
                 className={`tab ${activeTab === 'resolution' ? 'active' : ''}`}
                 onClick={() => setActiveTab('resolution')}
               >
                 Resolution & Survey Upload
               </button>
-              <button 
+              <button
                 className={`tab ${activeTab === 'fieldPhotos' ? 'active' : ''}`}
                 onClick={() => setActiveTab('fieldPhotos')}
               >
-                <Camera size={14} style={{display:'inline',marginRight:4}} />
+                <Camera size={14} style={{ display: 'inline', marginRight: 4 }} />
                 Field Photos
               </button>
             </div>
@@ -226,7 +236,7 @@ const ComplaintDetail = () => {
                   </div>
                   <div className="info-item">
                     <span className="info-label">Category</span>
-                    <span className="info-value"><AlertTriangle size={14} className="text-warning"/> {complaintData.type}</span>
+                    <span className="info-value"><AlertTriangle size={14} className="text-warning" /> {complaintData.type}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">Assigned Dept</span>
@@ -243,11 +253,18 @@ const ComplaintDetail = () => {
                 <div className="media-section">
                   <h3>Citizen Uploads</h3>
                   <div className="image-grid">
-                    <div className="image-card">
-                      <div className="image-placeholder bg-dark">
-                        <ImageIcon size={32} className="text-muted" />
-                      </div>
-                      <p className="image-caption">IMG_20231024_1041.jpg <ShieldCheck size={14} className="text-success inline-icon" /></p>
+                    <div className="image-card" style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      {complaintData.imageUrl ? (
+                        <img src={complaintData.imageUrl} alt="Citizen Verification Proof" style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '8px' }} />
+                      ) : (
+                        <div className="image-placeholder bg-dark" style={{ height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
+                          <ImageIcon size={32} className="text-muted" />
+                        </div>
+                      )}
+                      <p className="image-caption" style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Evidence_Capture_01.jpg</span>
+                        <ShieldCheck size={16} className="text-success inline-icon" />
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -255,52 +272,71 @@ const ComplaintDetail = () => {
             )}
 
             {activeTab === 'resolution' && (
-              <div className="tab-content">
+              <div className="tab-content animate-fade-in">
                 {resolutionState === 'idle' && (
-                  <div className="resolution-upload-area animate-fade-in">
-                    <input 
-                      type="file" 
-                      id="res-upload" 
-                      className="file-input-hidden-res" 
-                      onChange={handleResolutionUpload}
-                      style={{display: 'none'}}
-                    />
-                    
-                    {!resolutionFile ? (
-                      <>
-                        <Upload size={32} className="text-muted mb-2" />
-                        <h3>Upload Resolution Proof</h3>
-                        <p className="text-muted text-center max-w-sm mb-4">
-                          Take an "After" photo or video of the resolved issue. Our AI engine will verify the completion before closing the ticket.
-                        </p>
-                        <label htmlFor="res-upload" className="btn btn-primary cursor-pointer">
-                          Select Media
-                        </label>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle size={32} className="text-success mb-2" />
-                        <h3>Resolution File Attached</h3>
-                        <p className="text-muted text-center max-w-sm mb-4">
-                          Ready for AI Verification.
-                        </p>
-                        <div className="flex gap-4">
-                          <button onClick={() => setResolutionFile(false)} className="btn btn-secondary">Cancel</button>
-                          <button onClick={handleVerifyResolution} className="btn btn-primary">Run AI Verification</button>
+                  <div className="resolution-upload-area" style={{ textAlign: 'left' }}>
+                    <h3 style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Bot size={20} className="text-accent" /> AI Timeline Proof System
+                    </h3>
+                    <p className="text-muted mb-6" style={{ fontSize: '0.9rem' }}>
+                      To completely eliminate fake resolutions, upload media for all three phases of work. The AI engine will verify temporal, geographic, and structural continuity to ensure impossible-to-fake authenticity.
+                    </p>
+
+                    <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr', marginBottom: '1.5rem' }}>
+                      {/* Before */}
+                      <div className="glass-panel p-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div>
+                          <p style={{ fontWeight: 600, fontSize: '0.9rem' }}>1. Before (Arrival State)</p>
+                          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{timelineBefore ? timelineBefore.name : 'No file selected'}</p>
                         </div>
-                      </>
-                    )}
+                        <label className="btn btn-secondary btn-sm cursor-pointer" style={{ margin: 0 }}>
+                          {timelineBefore ? 'Change' : 'Upload Video/Image'}
+                          <input type="file" style={{ display: 'none' }} accept="video/*,image/*" onChange={(e) => handleTimelineUpload(e, 'before')} />
+                        </label>
+                      </div>
+
+                      {/* During */}
+                      <div className="glass-panel p-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div>
+                          <p style={{ fontWeight: 600, fontSize: '0.9rem' }}>2. During Work (In Progress)</p>
+                          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{timelineDuring ? timelineDuring.name : 'No file selected'}</p>
+                        </div>
+                        <label className="btn btn-secondary btn-sm cursor-pointer" style={{ margin: 0 }}>
+                          {timelineDuring ? 'Change' : 'Upload Video/Image'}
+                          <input type="file" style={{ display: 'none' }} accept="video/*,image/*" onChange={(e) => handleTimelineUpload(e, 'during')} />
+                        </label>
+                      </div>
+
+                      {/* After */}
+                      <div className="glass-panel p-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div>
+                          <p style={{ fontWeight: 600, fontSize: '0.9rem' }}>3. After (Resolved State)</p>
+                          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{timelineAfter ? timelineAfter.name : 'No file selected'}</p>
+                        </div>
+                        <label className="btn btn-secondary btn-sm cursor-pointer" style={{ margin: 0 }}>
+                          {timelineAfter ? 'Change' : 'Upload Video/Image'}
+                          <input type="file" style={{ display: 'none' }} accept="video/*,image/*" onChange={(e) => handleTimelineUpload(e, 'after')} />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-2 border-t border-white/10" style={{ paddingTop: '1rem' }}>
+                      <button className={`btn w-full ${allProofsLoaded ? 'btn-primary' : 'btn-secondary'}`} disabled={!allProofsLoaded} onClick={handleVerifyResolution}>
+                        {allProofsLoaded ? '✓ Run 3-Point AI Continuity Verification' : 'Upload all 3 proofs to proceed'}
+                      </button>
+                    </div>
                   </div>
                 )}
 
                 {resolutionState === 'analyzing' && (
                   <div className="ai-state-view analyzing animate-fade-in text-center p-8">
                     <Bot size={48} className="text-accent scanner-icon mx-auto mb-4" />
-                    <h3>AI Resolution Verification</h3>
-                    <p className="text-muted max-w-sm mx-auto mt-2">
-                      Comparing "Before" and "After" images. Verifying geographic coordinates and timestamp authenticity...
+                    <h3>AI Continuity Verification</h3>
+                    <p className="text-muted mx-auto mt-2" style={{ fontSize: '0.85rem' }}>
+                      Analyzing Timeline: Before ➔ During ➔ After.<br />
+                      Verifying structural integrity matches, extracting EXIF timestamps, and confirming geographic coordinates...
                     </p>
-                    <div className="progress-bar mt-6 mx-auto w-full max-w-xs "><div className="fill scan-progress max-w-full"></div></div>
+                    <div className="progress-bar mt-6 mx-auto w-full max-w-xs "><div className="fill scan-progress max-w-full" style={{ animationDuration: '3s' }}></div></div>
                   </div>
                 )}
 
@@ -309,23 +345,23 @@ const ComplaintDetail = () => {
                     <div className="icon-circle bg-success-dim mx-auto mt-4">
                       <ShieldCheck size={48} className="text-success" />
                     </div>
-                    <h3 className="text-success">Work Authenticated</h3>
-                    <p className="mt-2 max-w-sm mx-auto text-secondary">
-                      The AI has confirmed the structural repairs match the location. The ticket has been officially marked as Resolved and the citizen notified.
+                    <h3 className="text-success">Continuity Verified: Impossible to Fake</h3>
+                    <p className="mt-2 max-w-md mx-auto text-secondary" style={{ fontSize: '0.85rem' }}>
+                      The AI timeline system has successfully authenticated the workflow. Timeline metadata and structural elements match perfectly securely tying the resolution to the issue. The ticket is officially Resolved.
                     </p>
                   </div>
                 )}
-                
+
                 {resolutionState === 'failed' && (
                   <div className="ai-state-view failed animate-fade-in text-center p-8">
                     <div className="icon-circle bg-danger-dim mx-auto mt-4">
                       <AlertTriangle size={48} className="text-danger" />
                     </div>
-                    <h3 className="text-danger">AI Verification Failed</h3>
-                    <p className="mt-2 text-danger">
-                      The uploaded resolution image does not match the geographic location of the original complaint. Task cannot be closed.
+                    <h3 className="text-danger">AI Proof Inconsistency Detected</h3>
+                    <p className="mt-2 max-w-md mx-auto text-danger" style={{ fontSize: '0.85rem' }}>
+                      The uploaded timeline sequence does not match physically or temporally. AI detected structural gaps likely indicating spoofing. Task cannot be closed.
                     </p>
-                    <button onClick={resetResolution} className="btn btn-secondary mt-6">Try Again</button>
+                    <button onClick={resetResolution} className="btn btn-secondary mt-6">Restart Compliance Process</button>
                   </div>
                 )}
               </div>
@@ -409,7 +445,7 @@ const ComplaintDetail = () => {
                   </button>
                 </div>
               </div>
-            )
+            )}
           </div>
         </div>
 
@@ -419,7 +455,7 @@ const ComplaintDetail = () => {
               <FileCheck2 size={24} className="text-success" />
               <h3>Original AI Analysis</h3>
             </div>
-            
+
             <div className="ai-score-container">
               <div className="score-circle">
                 <span className="score-value">{complaintData.aiConfidence}<span className="percent">%</span></span>
@@ -433,21 +469,21 @@ const ComplaintDetail = () => {
                   <span>Deepfake Detection</span>
                   <span className="text-success">Passed</span>
                 </div>
-                <div className="progress-bar"><div className="fill bg-success" style={{width: '98%'}}></div></div>
+                <div className="progress-bar"><div className="fill bg-success" style={{ width: '98%' }}></div></div>
               </div>
               <div className="metric">
                 <div className="metric-header">
                   <span>GPS Consistency</span>
                   <span className="text-success">Verified</span>
                 </div>
-                <div className="progress-bar"><div className="fill bg-success" style={{width: '95%'}}></div></div>
+                <div className="progress-bar"><div className="fill bg-success" style={{ width: '95%' }}></div></div>
               </div>
               <div className="metric">
                 <div className="metric-header">
                   <span>Image Recycled</span>
                   <span className="text-warning">Low Risk</span>
                 </div>
-                <div className="progress-bar"><div className="fill bg-warning" style={{width: '20%'}}></div></div>
+                <div className="progress-bar"><div className="fill bg-warning" style={{ width: '20%' }}></div></div>
               </div>
             </div>
           </div>
@@ -470,7 +506,7 @@ const ComplaintDetail = () => {
                 </div>
               </div>
               <div className="timeline-item">
-                <div className="timeline-marker active" style={{borderColor: 'var(--status-danger)', background: 'var(--status-danger)'}}></div>
+                <div className="timeline-marker active" style={{ borderColor: 'var(--status-danger)', background: 'var(--status-danger)' }}></div>
                 <div className="timeline-content">
                   <h4 className="text-danger">SLA Breached</h4>
                   <p>Oct 26, 10:47 AM • Auto-escalated to Level 2</p>

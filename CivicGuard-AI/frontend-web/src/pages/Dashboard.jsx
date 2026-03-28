@@ -1,7 +1,7 @@
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
   ShieldAlert,
   ArrowUpRight,
   ArrowDownRight,
@@ -32,7 +32,7 @@ const StatCard = ({ title, value, icon, trend, trendValue, type }) => (
 );
 
 const getStatusBadgeClass = (status) => {
-  switch(status) {
+  switch (status) {
     case 'Resolved': return 'badge-success';
     case 'Escalated': return 'badge-danger';
     case 'In Progress': return 'badge-info';
@@ -67,7 +67,7 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-    
+
     fetchComplaints();
   }, []);
 
@@ -88,36 +88,36 @@ const Dashboard = () => {
       </div>
 
       <div className="stat-grid">
-        <StatCard 
-          title="Active Issues" 
-          value="1,248" 
-          icon={<AlertTriangle size={24} />} 
-          trend="down" 
-          trendValue="12%" 
+        <StatCard
+          title="Active Issues"
+          value="1,248"
+          icon={<AlertTriangle size={24} />}
+          trend="down"
+          trendValue="12%"
           type="warning"
         />
-        <StatCard 
-          title="AI Verified" 
-          value="98.5%" 
-          icon={<ShieldAlert size={24} />} 
-          trend="up" 
-          trendValue="2.1%" 
+        <StatCard
+          title="AI Verified"
+          value="98.5%"
+          icon={<ShieldAlert size={24} />}
+          trend="up"
+          trendValue="2.1%"
           type="info"
         />
-        <StatCard 
-          title="Escalated" 
-          value="84" 
-          icon={<Clock size={24} />} 
-          trend="up" 
-          trendValue="8%" 
+        <StatCard
+          title="Escalated"
+          value="84"
+          icon={<Clock size={24} />}
+          trend="up"
+          trendValue="8%"
           type="danger"
         />
-        <StatCard 
-          title="Resolved (Today)" 
-          value="312" 
-          icon={<CheckCircle size={24} />} 
-          trend="up" 
-          trendValue="24%" 
+        <StatCard
+          title="Resolved (Today)"
+          value="312"
+          icon={<CheckCircle size={24} />}
+          trend="up"
+          trendValue="24%"
           type="success"
         />
       </div>
@@ -125,7 +125,7 @@ const Dashboard = () => {
       <div className="dashboard-main-content">
         <div className="recent-complaints glass-panel">
           <div className="panel-header">
-            <h2 className="panel-title">Live Reports <span style={{fontSize:'0.8rem',color:'var(--text-muted)',fontWeight:400}}>({dateFilter})</span></h2>
+            <h2 className="panel-title">Live Reports <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>({dateFilter})</span></h2>
             <button className="btn btn-secondary btn-sm" onClick={() => navigate('/issues')}>View All</button>
           </div>
           <div className="table-container">
@@ -154,7 +154,7 @@ const Dashboard = () => {
                     <td>
                       <div className="flex items-center gap-2">
                         <div className="progress-bar-bg">
-                          <div className="progress-bar-fill" style={{width: `${complaint.aiConfidence}%`}}></div>
+                          <div className="progress-bar-fill" style={{ width: `${complaint.aiConfidence}%` }}></div>
                         </div>
                         <span className="text-xs">{complaint.aiConfidence}%</span>
                       </div>
@@ -171,16 +171,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="heatmap-widget glass-panel" style={{cursor:'pointer'}} onClick={() => navigate('/map')}>
+        <div className="heatmap-widget glass-panel" style={{ cursor: 'pointer' }} onClick={() => navigate('/map')}>
           <div className="panel-header">
             <h2 className="panel-title">Severity Heatmap</h2>
-            <span style={{fontSize:'0.75rem',color:'var(--accent-primary)'}}>Click to open map →</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--accent-primary)' }}>Click to open map →</span>
           </div>
           <div className="heatmap-placeholder">
             <div className="map-overlay">
               <MapIcon size={48} className="pulse-icon" />
               <p>Live Map Integration Enabled</p>
-              <p style={{fontSize:'0.78rem',color:'var(--text-muted)',marginTop:4}}>Tap to view all markers</p>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 4 }}>Tap to view all markers</p>
             </div>
           </div>
         </div>

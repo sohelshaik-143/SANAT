@@ -61,7 +61,7 @@ const ActiveIssues = () => {
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} />
           <input
             className="input-field"
-            style={{ paddingLeft: '36px' }}
+            style={{ paddingLeft: '36px', width: '100%' }}
             placeholder="Search by ID or location..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -78,7 +78,7 @@ const ActiveIssues = () => {
 
       <div className="recent-complaints glass-panel">
         <div className="panel-header">
-          <h2 className="panel-title"><AlertTriangle size={18} style={{display:'inline', marginRight: 8}} />All Reports ({filtered.length})</h2>
+          <h2 className="panel-title"><AlertTriangle size={18} style={{ display: 'inline', marginRight: 8 }} />All Reports ({filtered.length})</h2>
         </div>
         <div className="table-container">
           <table className="data-table">
@@ -100,7 +100,7 @@ const ActiveIssues = () => {
                 <tr key={c.id}>
                   <td className="font-medium">{c.id}</td>
                   <td>{c.type}</td>
-                  <td><span className="text-truncate"><MapPin size={12} style={{display:'inline',marginRight:4}} />{c.location}</span></td>
+                  <td><span className="text-truncate"><MapPin size={12} style={{ display: 'inline', marginRight: 4 }} />{c.location}</span></td>
                   <td>
                     <div className="flex items-center gap-2">
                       <div className="progress-bar-bg">

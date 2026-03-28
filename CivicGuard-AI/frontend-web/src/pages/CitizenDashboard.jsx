@@ -104,6 +104,7 @@ const analyzeImageWithAI = (file) => {
 const CitizenDashboard = () => {
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [coordinates, setCoordinates] = useState(null);
   const [fileSelected, setFileSelected] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [aiState, setAiState] = useState('idle');
@@ -186,8 +187,8 @@ const CitizenDashboard = () => {
         district: 'Central',
         state: 'State',
         pincode: '000000',
-        latitude: 12.9716,
-        longitude: 77.5946
+        latitude: coordinates ? coordinates.lat : 12.9716,
+        longitude: coordinates ? coordinates.lng : 77.5946
       })], { type: 'application/json' }));
       formData.append('image', fileSelected);
       await apiClient.post('/complaints', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -200,12 +201,15 @@ const CitizenDashboard = () => {
           id: newId,
           type: result.topIssue || 'Civic Issue',
           location,
+          lat: coordinates ? coordinates.lat : 12.9716,
+          lng: coordinates ? coordinates.lng : 77.5946,
           status: 'Pending',
           date: new Date().toLocaleString(),
           description,
           reporter: user.name,
           department: 'General Triage',
-          aiConfidence: result.confidence
+          aiConfidence: result.confidence,
+          imageUrl: imagePreviewUrl
         });
         setReports(getComplaints());
         setAiState('success');
@@ -224,13 +228,29 @@ const CitizenDashboard = () => {
   };
 
   const handleUseGPS = () => {
+    setLocation('Fetching high-precision GPS...');
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => setLocation(`${pos.coords.latitude.toFixed(4)}° N, ${pos.coords.longitude.toFixed(4)}° E (Live GPS)`),
-        () => setLocation('12.9716° N, 77.5946° E (GPS Fallback)')
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          setCoordinates({ lat, lng: lon });
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+            const data = await res.json();
+            const address = data.display_name ? data.display_name.split(',').slice(0, 4).join(',') : `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E`;
+            setLocation(`${address} (Verified GPS)`);
+          } catch (e) {
+            setLocation(`${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E (Verified GPS)`);
+          }
+        },
+        (error) => {
+          setLocation('GPS access denied. Please allow location permissions.');
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
-      setLocation('12.9716° N, 77.5946° E (High-Precision GPS)');
+      setLocation('Geolocation is not supported by your browser.');
     }
   };
 
@@ -420,8 +440,8 @@ const CitizenDashboard = () => {
 
       {/* Track Status Modal */}
       {trackingReport && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 animate-fade-in backdrop-blur-sm">
-          <div className="bg-[#111] border border-white/10 rounded-xl p-6 max-w-md w-full relative shadow-2xl">
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-50 animate-fade-in backdrop-blur-sm" style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}>
+          <div className="glass-panel p-6 max-w-md w-full relative shadow-2xl" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid rgba(255,255,255,0.1)' }}>
             <button className="absolute top-4 right-4 text-muted hover:text-white transition-colors" onClick={() => setTrackingReport(null)}>
               <X size={20} />
             </button>
@@ -434,13 +454,13 @@ const CitizenDashboard = () => {
                 ['Location', trackingReport.location],
                 ['Date Submitted', trackingReport.date],
               ].map(([label, val]) => (
-                <div key={label} className="flex justify-between items-center bg-[#222] p-3 rounded border border-white/5">
-                  <span className="text-sm text-muted">{label}</span>
-                  <span className="font-medium">{val}</span>
+                <div key={label} className="flex justify-between items-center p-3 rounded" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <span className="text-sm text-muted flex-shrink-0 mr-4">{label}</span>
+                  <span className="font-medium text-right text-sm" style={{ wordBreak: 'break-word', maxWidth: '65%' }}>{val}</span>
                 </div>
               ))}
-              <div className="flex justify-between items-center bg-[#222] p-3 rounded border border-white/5">
-                <span className="text-sm text-muted">Current Status</span>
+              <div className="flex justify-between items-center p-3 rounded" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span className="text-sm text-muted flex-shrink-0 mr-4">Current Status</span>
                 <span className={`badge ${trackingReport.status === 'Resolved' ? 'badge-success' : trackingReport.status === 'In Progress' ? 'badge-info' : 'badge-warning'}`}>
                   {trackingReport.status}
                 </span>
