@@ -409,7 +409,7 @@ const ComplaintDetail = () => {
                   </button>
                 </div>
               </div>
-            )
+            )}
           </div>
         </div>
 
