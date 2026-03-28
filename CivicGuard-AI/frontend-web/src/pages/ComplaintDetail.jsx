@@ -40,7 +40,9 @@ const ComplaintDetail = () => {
            date: c.submittedAt ? new Date(c.submittedAt).toLocaleString() : new Date().toLocaleString(),
            description: c.description || "No description provided",
            reporter: "Citizen Participant",
-           department: c.assignedDepartment || "General Dept"
+           department: c.assignedDepartment || "General Dept",
+           originalImage: c.originalImagePath ? `http://localhost:8080/api/uploads/${c.originalImagePath.split(/[\\/]/).pop()}` : null,
+           resolutionImage: c.resolutionImagePath ? `http://localhost:8080/api/uploads/resolutions/${c.resolutionImagePath.split(/[\\/]/).pop()}` : null
         };
         setComplaintData(mapped);
         setIsResolved(mapped.status === 'Resolved');
@@ -254,10 +256,26 @@ const ComplaintDetail = () => {
                   <h3>Citizen Uploads</h3>
                   <div className="image-grid">
                     <div className="image-card">
-                      <div className="image-placeholder bg-dark">
-                        <ImageIcon size={32} className="text-muted" />
-                      </div>
-                      <p className="image-caption">IMG_20231024_1041.jpg <ShieldCheck size={14} className="text-success inline-icon" /></p>
+                      {complaintData.originalImage ? (
+                        <img 
+                          src={complaintData.originalImage} 
+                          alt="Citizen Upload" 
+                          className="evidence-image"
+                          style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                          }}
+                        />
+                      ) : (
+                        <div className="image-placeholder bg-dark">
+                          <ImageIcon size={32} className="text-muted" />
+                        </div>
+                      )}
+                      <p className="image-caption">
+                        {complaintData.originalImage ? 'Verified Evidence' : 'No photo uploaded'} 
+                        <ShieldCheck size={14} className="text-success inline-icon" />
+                      </p>
                     </div>
                   </div>
                 </div>

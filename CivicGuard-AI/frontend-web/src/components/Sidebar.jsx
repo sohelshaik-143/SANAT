@@ -7,6 +7,7 @@ import {
   CheckCircle,
   FileText,
   Settings,
+  Users,
   LogOut
 } from 'lucide-react';
 import { getUser } from '../data/mockData';
@@ -35,26 +36,14 @@ const Sidebar = () => {
 
       <div className="sidebar-content">
         <nav className="nav-menu">
-          <p className="nav-label">MAIN MENU</p>
+          <p className="nav-label">COMMAND CENTER</p>
           <NavLink to="/dashboard" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
           </NavLink>
-          <NavLink to="/issues" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
-            <AlertTriangle size={20} />
-            <span>Active Issues</span>
-          </NavLink>
-          <NavLink to="/map" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
-            <MapIcon size={20} />
-            <span>Issue Map</span>
-          </NavLink>
-          <NavLink to="/resolved" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
-            <CheckCircle size={20} />
-            <span>Resolved</span>
-          </NavLink>
-          <NavLink to="/reports" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
-            <FileText size={20} />
-            <span>Reports (RTI)</span>
+          <NavLink to="/community" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
+            <Users size={20} />
+            <span>Community Pulse</span>
           </NavLink>
         </nav>
 
