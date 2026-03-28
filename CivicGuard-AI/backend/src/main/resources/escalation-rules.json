@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "description": "CivicGuard-AI Auto-Escalation Rules for Indian Civic Governance",
+
+  "escalation_tiers": [
+    {
+      "level": 1,
+      "designation": "Field Officer",
+      "description": "Ward-level field officer / Junior Engineer",
+      "responsibilities": ["Initial inspection", "Basic repairs", "Status updates"]
+    },
+    {
+      "level": 2,
+      "designation": "Block Officer / Supervisor",
+      "description": "Block Development Officer / Assistant Engineer",
+      "responsibilities": ["Supervise field officers", "Approve budgets", "Complex repairs"]
+    },
+    {
+      "level": 3,
+      "designation": "District Collector",
+      "description": "District Magistrate / Executive Engineer",
+      "responsibilities": ["District-level oversight", "Resource allocation", "Policy enforcement"]
+    },
+    {
+      "level": 4,
+      "designation": "State Commissioner",
+      "description": "State Secretary / Commissioner of Municipal Administration",
+      "responsibilities": ["State-level action", "Systemic reforms", "Disciplinary action"]
+    }
+  ],
+
+  "sla_deadlines_hours": {
+    "EMERGENCY": 4,
+    "CRITICAL": 12,
+    "HIGH": 24,
+    "MEDIUM": 48,
+    "LOW": 72
+  },
+
+  "escalation_deadline_multiplier": {
+    "description": "Each escalation level reduces the deadline. Level N deadline = base / N",
+    "min_hours": 1
+  },
+
+  "severity_classification": {
+    "EMERGENCY": {
+      "description": "Immediate threat to life or safety",
+      "examples": ["Gas leak", "Bridge collapse", "Sinkhole on highway", "Exposed electrical wires"],
+      "departments": ["PWD", "Fire Department", "Municipal Corporation"]
+    },
+    "CRITICAL": {
+      "description": "Severe infrastructure failure affecting many people",
+      "examples": ["Major water main burst", "Road cave-in", "Sewage flooding", "Fallen tree on road"],
+      "departments": ["Water Board", "PWD", "Municipal Corporation"]
+    },
+    "HIGH": {
+      "description": "Significant issue requiring prompt action",
+      "examples": ["Deep potholes on main road", "Overflowing drains", "Broken streetlights on highway"],
+      "departments": ["PWD", "Municipal Sanitation", "Municipal Electricity"]
+    },
+    "MEDIUM": {
+      "description": "Notable issue affecting daily life",
+      "examples": ["Garbage accumulation", "Minor water leak", "Damaged road signs"],
+      "departments": ["Municipal Sanitation", "Water Board", "Traffic Police"]
+    },
+    "LOW": {
+      "description": "Minor issue for scheduled maintenance",
+      "examples": ["Faded road markings", "Overgrown vegetation", "Minor pavement cracks"],
+      "departments": ["Municipal Corporation", "PWD"]
+    }
+  },
+
+  "fraud_detection_rules": {
+    "auto_flag_thresholds": {
+      "consecutive_fraud_attempts_for_red_flag": 3,
+      "minimum_before_after_gps_distance_meters": 50,
+      "maximum_image_age_hours": 48,
+      "minimum_resolution_time_minutes": 30
+    },
+    "actions_on_red_flag": [
+      "Suspend officer's ability to submit resolutions",
+      "Auto-generate complaint to Internal Affairs",
+      "Notify District Collector",
+      "Archive all evidence for audit"
+    ]
+  },
+
+  "department_routing": {
+    "POTHOLE": "PWD",
+    "GARBAGE": "Municipal Sanitation",
+    "DRAINAGE": "Municipal Water",
+    "WATER_LEAK": "Water Board",
+    "STREETLIGHT": "Municipal Electricity",
+    "SEWAGE": "Municipal Sanitation",
+    "ENCROACHMENT": "Municipal Corporation",
+    "TREE_FALL": "Municipal Corporation",
+    "ROAD_SIGN": "Traffic Police / NHAI",
+    "BRIDGE_DAMAGE": "PWD / NHAI",
+    "CONSTRUCTION_DEBRIS": "Municipal Corporation",
+    "STRAY_ANIMALS": "Animal Husbandry",
+    "NOISE_POLLUTION": "Pollution Control Board",
+    "AIR_POLLUTION": "Pollution Control Board",
+    "OTHER": "Municipal Corporation"
+  },
+
+  "notification_templates": {
+    "languages": ["en", "hi", "te", "ta", "kn", "ml", "bn", "mr", "gu", "pa", "od", "ur"]
+  }
+}
