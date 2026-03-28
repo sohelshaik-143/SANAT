@@ -112,6 +112,7 @@ const CitizenDashboard = () => {
   const [trackingReport, setTrackingReport] = useState(null);
   const [trackingId, setTrackingId] = useState('');
   const [pasteActive, setPasteActive] = useState(false);
+  const [coords, setCoords] = useState({ lat: 12.9716, lng: 77.5946 });
   const user = getUser();
 
   // Paste image support
@@ -186,8 +187,8 @@ const CitizenDashboard = () => {
         district: 'Central',
         state: 'State',
         pincode: '000000',
-        latitude: 12.9716,
-        longitude: 77.5946
+        latitude: coords.lat,
+        longitude: coords.lng
       })], { type: 'application/json' }));
       formData.append('image', fileSelected);
       await apiClient.post('/complaints', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -205,7 +206,9 @@ const CitizenDashboard = () => {
           description,
           reporter: user.name,
           department: 'General Triage',
-          aiConfidence: result.confidence
+          aiConfidence: result.confidence,
+          lat: coords.lat,
+          lng: coords.lng
         });
         setReports(getComplaints());
         setAiState('success');
@@ -226,11 +229,17 @@ const CitizenDashboard = () => {
   const handleUseGPS = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => setLocation(`${pos.coords.latitude.toFixed(4)}° N, ${pos.coords.longitude.toFixed(4)}° E (Live GPS)`),
-        () => setLocation('12.9716° N, 77.5946° E (GPS Fallback)')
+        (pos) => {
+          setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setLocation(`${pos.coords.latitude.toFixed(6)}° N, ${pos.coords.longitude.toFixed(6)}° E (Exact GPS)`);
+        },
+        () => {
+          setCoords({ lat: 12.9716, lng: 77.5946 });
+          setLocation('12.9716° N, 77.5946° E (Manual Center)');
+        }
       );
     } else {
-      setLocation('12.9716° N, 77.5946° E (High-Precision GPS)');
+      setLocation('12.9716° N, 77.5946° E (Manual Fallback)');
     }
   };
 
