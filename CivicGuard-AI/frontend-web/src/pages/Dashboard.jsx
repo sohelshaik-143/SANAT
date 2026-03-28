@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { getComplaints } from '../data/mockData';
+import { getComplaints, clearAllComplaints } from '../data/mockData';
 import apiClient from '../api/apiClient';
 import './Dashboard.css';
 
@@ -71,6 +71,18 @@ const Dashboard = () => {
     fetchComplaints();
   }, []);
 
+  const activeCount = complaints.filter(c => c.status && c.status !== 'Resolved').length;
+  const verifiedCount = complaints.length > 0 ? (complaints.reduce((acc, curr) => acc + (curr.aiConfidence || 95), 0) / complaints.length).toFixed(1) + '%' : '0.0%';
+  const escalatedCount = complaints.filter(c => c.status && c.status.includes('Escalated')).length;
+  const resolvedCount = complaints.filter(c => c.status === 'Resolved').length;
+
+  const handleResetData = () => {
+    if (window.confirm('⚠️ This will permanently delete all reported issues. Are you sure?')) {
+      clearAllComplaints();
+      setComplaints([]);
+    }
+  };
+
   return (
     <div className="dashboard-container animate-fade-in">
       <div className="dashboard-header-flex">
@@ -78,46 +90,53 @@ const Dashboard = () => {
           <h1 className="page-title">Command Center</h1>
           <p className="page-subtitle">Real-time civic issue monitoring & AI verification</p>
         </div>
-        <div className="date-filter">
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
           <select className="input-field" value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
+            <option>All Time</option>
             <option>Today</option>
-            <option>Last 7 Days</option>
             <option>This Month</option>
           </select>
+          <button
+            onClick={handleResetData}
+            className="btn btn-secondary btn-sm"
+            style={{ background: 'rgba(239,68,68,0.12)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', whiteSpace: 'nowrap' }}
+          >
+            🗑 Reset Data
+          </button>
         </div>
       </div>
 
       <div className="stat-grid">
         <StatCard
           title="Active Issues"
-          value="1,248"
+          value={activeCount.toString()}
           icon={<AlertTriangle size={24} />}
-          trend="down"
-          trendValue="12%"
+          trend="up"
+          trendValue="Live Sync"
           type="warning"
         />
         <StatCard
-          title="AI Verified"
-          value="98.5%"
+          title="Avg AI Verified"
+          value={verifiedCount}
           icon={<ShieldAlert size={24} />}
           trend="up"
-          trendValue="2.1%"
+          trendValue="System Avg."
           type="info"
         />
         <StatCard
           title="Escalated"
-          value="84"
+          value={escalatedCount.toString()}
           icon={<Clock size={24} />}
-          trend="up"
-          trendValue="8%"
+          trend="down"
+          trendValue="Live Sync"
           type="danger"
         />
         <StatCard
-          title="Resolved (Today)"
-          value="312"
+          title="Resolved"
+          value={resolvedCount.toString()}
           icon={<CheckCircle size={24} />}
           trend="up"
-          trendValue="24%"
+          trendValue="Live Sync"
           type="success"
         />
       </div>

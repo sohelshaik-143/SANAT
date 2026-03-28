@@ -73,8 +73,11 @@ const IssueMap = () => {
     ? complaints
     : complaints.filter(c => c.type === selectedCategory);
 
-  const pendingIssues = filtered.filter(c => c.status === 'Pending' || c.status === 'In Progress');
-  const activeCenterItem = pendingIssues.length > 0 ? pendingIssues[0] : (filtered.length > 0 ? filtered[0] : null);
+  // Only show unresolved markers on the map
+  const activeMarkers = filtered.filter(c => c.status !== 'Resolved');
+
+  const pendingIssues = activeMarkers.filter(c => c.status === 'Pending' || c.status === 'In Progress');
+  const activeCenterItem = pendingIssues.length > 0 ? pendingIssues[0] : (activeMarkers.length > 0 ? activeMarkers[0] : null);
   const mapCenter = activeCenterItem ? [activeCenterItem.lat, activeCenterItem.lng] : [12.9716, 77.5946];
 
   return (
@@ -122,7 +125,7 @@ const IssueMap = () => {
               attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
-            {filtered.map(c => (
+            {activeMarkers.map(c => (
               <CircleMarker
                 key={c.id}
                 center={[c.lat, c.lng]}
