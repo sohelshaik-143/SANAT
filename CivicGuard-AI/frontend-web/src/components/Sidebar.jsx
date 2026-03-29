@@ -50,16 +50,12 @@ const Sidebar = () => {
           <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <FileText size={20} />
             <span>Reports (RTI)</span>
-
-          <p className="nav-label">COMMAND CENTER</p>
-          <NavLink to="/dashboard" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
-            <LayoutDashboard size={20} />
-            <span>Dashboard</span>
           </NavLink>
+          
+          <p className="nav-label" style={{ marginTop: '1rem' }}>COMMUNITY</p>
           <NavLink to="/community" className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
             <Users size={20} />
             <span>Community Pulse</span>
-
           </NavLink>
         </nav>
 

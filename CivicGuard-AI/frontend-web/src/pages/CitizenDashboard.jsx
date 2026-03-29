@@ -267,7 +267,6 @@ const CitizenDashboard = () => {
   const [voiceState, setVoiceState] = useState('idle'); // idle | listening | translating
   const [voiceOriginal, setVoiceOriginal] = useState('');
   const recogRef = useRef(null);
-=======
   const [coords, setCoords] = useState({ lat: 12.9716, lng: 77.5946 });
 
   const user = getUser();
@@ -399,13 +398,9 @@ const CitizenDashboard = () => {
         district: 'Central',
         state: 'State',
         pincode: '000000',
-
-        latitude: coordinates ? coordinates.lat : 12.9716,
-        longitude: coordinates ? coordinates.lng : 77.5946,
+        latitude: coordinates ? coordinates.lat : coords.lat,
+        longitude: coordinates ? coordinates.lng : coords.lng,
         isVideo: isVideoFile
-
-        latitude: coords.lat,
-
       })], { type: 'application/json' }));
       formData.append('image', fileSelected);
       await apiClient.post('/complaints', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -427,12 +422,9 @@ const CitizenDashboard = () => {
           reporter: user.name,
           department: 'General Triage',
           aiConfidence: result.confidence,
-
           imageUrl: result.base64 || null,
-
-          lat: coords.lat,
-          lng: coords.lng
-
+          lat: coordinates ? coordinates.lat : coords.lat,
+          lng: coordinates ? coordinates.lng : coords.lng
         });
         setReports(getComplaints());
         setAiState('success');
@@ -477,19 +469,6 @@ const CitizenDashboard = () => {
       );
     } else {
       setLocation('Geolocation is not supported by your browser.');
-
-        (pos) => {
-          setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-          setLocation(`${pos.coords.latitude.toFixed(6)}° N, ${pos.coords.longitude.toFixed(6)}° E (Exact GPS)`);
-        },
-        () => {
-          setCoords({ lat: 12.9716, lng: 77.5946 });
-          setLocation('12.9716° N, 77.5946° E (Manual Center)');
-        }
-      );
-    } else {
-      setLocation('12.9716° N, 77.5946° E (Manual Fallback)');
-
     }
   };
 

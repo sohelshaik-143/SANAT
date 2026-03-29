@@ -34,7 +34,6 @@ const ComplaintDetail = () => {
         const response = await apiClient.get(`/complaints/${id}`);
         const c = response.data;
         const mapped = {
-
           id: c.ticketNumber || c.id,
           type: c.category || 'Civic Issue',
           location: c.address || 'Unknown',
@@ -43,20 +42,9 @@ const ComplaintDetail = () => {
           date: c.submittedAt ? new Date(c.submittedAt).toLocaleString() : new Date().toLocaleString(),
           description: c.description || "No description provided",
           reporter: "Citizen Participant",
-          department: c.assignedDepartment || "General Dept"
-
-           id: c.ticketNumber || c.id,
-           type: c.category || 'Civic Issue',
-           location: c.address || 'Unknown',
-           aiConfidence: c.authenticityScore ? Math.round(c.authenticityScore * 100) : 95,
-           status: c.status || 'Pending',
-           date: c.submittedAt ? new Date(c.submittedAt).toLocaleString() : new Date().toLocaleString(),
-           description: c.description || "No description provided",
-           reporter: "Citizen Participant",
-           department: c.assignedDepartment || "General Dept",
-           originalImage: c.originalImagePath ? `http://localhost:8080/api/uploads/${c.originalImagePath.split(/[\\/]/).pop()}` : null,
-           resolutionImage: c.resolutionImagePath ? `http://localhost:8080/api/uploads/resolutions/${c.resolutionImagePath.split(/[\\/]/).pop()}` : null
-
+          department: c.assignedDepartment || "General Dept",
+          originalImage: c.originalImagePath ? `http://localhost:8080/api/uploads/${c.originalImagePath.split(/[\\/]/).pop()}` : null,
+          resolutionImage: c.resolutionImagePath ? `http://localhost:8080/api/uploads/resolutions/${c.resolutionImagePath.split(/[\\/]/).pop()}` : null
         };
         setComplaintData(mapped);
         setIsResolved(mapped.status === 'Resolved');
@@ -289,6 +277,8 @@ const ComplaintDetail = () => {
                       <p className="image-caption" style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Evidence_Capture_01.jpg</span>
                         <ShieldCheck size={16} className="text-success inline-icon" />
+                      </p>
+                    </div>
 
                     <div className="image-card">
                       {complaintData.originalImage ? (

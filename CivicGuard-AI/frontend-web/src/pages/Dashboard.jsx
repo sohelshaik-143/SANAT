@@ -16,10 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
-import { getComplaints, clearAllComplaints } from '../data/mockData';
-=======
-import { getComplaints, getOfficers } from '../data/mockData';
-
+import { getComplaints, clearAllComplaints, getOfficers } from '../data/mockData';
 import apiClient from '../api/apiClient';
 import IssueMap from './IssueMap';
 import Reports from './Reports';
@@ -44,9 +41,6 @@ const StatCard = ({ title, value, icon, trend, trendValue, type }) => (
 );
 
 const getStatusBadgeClass = (status) => {
-
-  switch (status) {
-
   switch(status) {
 
     case 'Resolved': return 'badge-success';
@@ -94,7 +88,7 @@ const Dashboard = () => {
     };
 
 
-    fetchComplaints();
+    fetchData();
   }, []);
 
   const activeCount = complaints.filter(c => c.status && c.status !== 'Resolved').length;
@@ -108,9 +102,6 @@ const Dashboard = () => {
       setComplaints([]);
     }
   };
-
-    fetchData();
-  }, []);
 
   const filteredComplaints = complaints.filter(c => 
     c.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -128,7 +119,7 @@ const Dashboard = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          <select className="input-field" value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
+          <select className="input-field">
             <option>All Time</option>
             <option>Today</option>
             <option>This Month</option>
@@ -181,8 +172,9 @@ const Dashboard = () => {
       <div className="dashboard-main-content">
         <div className="recent-complaints glass-panel">
           <div className="panel-header">
-            <h2 className="panel-title">Live Reports <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>({dateFilter})</span></h2>
+            <h2 className="panel-title">Live Reports</h2>
             <button className="btn btn-secondary btn-sm" onClick={() => navigate('/issues')}>View All</button>
+          </div>
 
         <div className="tab-navigation glass-panel">
           <button className={`nav-tab ${activeTab === 'feed' ? 'active' : ''}`} onClick={() => setActiveTab('feed')}><LayoutGrid size={16}/> Live Feed</button>
@@ -226,20 +218,11 @@ const Dashboard = () => {
                     <th>Submission</th>
                     <th>Actions</th>
                   </tr>
-
-                ) : complaints.map(complaint => (
-                  <tr key={complaint.id}>
-                    <td className="font-medium">{complaint.id}</td>
-                    <td>{complaint.type}</td>
-                    <td><span className="text-truncate">{complaint.location}</span></td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <div className="progress-bar-bg">
-                          <div className="progress-bar-fill" style={{ width: `${complaint.aiConfidence}%` }}></div>
-       </thead>
+                </thead>
                 <tbody>
                   {filteredComplaints.length === 0 ? (
                     <tr><td colSpan="7" className="text-center p-12 text-muted">No cases matching your criteria.</td></tr>
+
                   ) : filteredComplaints.map(c => (
                     <tr key={c.id}>
                       <td className="font-bold text-accent">{c.id}</td>
@@ -277,6 +260,9 @@ const Dashboard = () => {
               <MapIcon size={48} className="pulse-icon" />
               <p>Live Map Integration Enabled</p>
               <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 4 }}>Tap to view all markers</p>
+            </div>
+          </div>
+        </div>
 
       {activeTab === 'map' && <div className="h-[600px] rounded-2xl overflow-hidden shadow-2xl"><IssueMap /></div>}
 
@@ -310,6 +296,7 @@ const Dashboard = () => {
 
       {activeTab === 'analytics' && <Reports />}
     </div>
+  </div>
   );
 };
 
