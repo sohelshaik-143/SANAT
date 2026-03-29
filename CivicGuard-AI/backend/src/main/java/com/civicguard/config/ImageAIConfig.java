@@ -5,8 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.Duration;
-
 /**
  * Configuration for the AI Verification Engine connection.
  * Sets up WebClient to communicate with the Python AI microservice
