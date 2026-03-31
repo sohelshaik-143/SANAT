@@ -12,7 +12,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.databinding.ActivityMainBinding
+import com.civicguard.R
+import com.civicguard.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -59,12 +60,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val result = super.onCreateOptionsMenu(menu)
-        // Using findViewById because NavigationView exists in different layout files
-        // between w600dp and w1240dp
         val navView: NavigationView? = findViewById(R.id.nav_view)
         if (navView == null) {
-            // The navigation drawer already has the items including the items in the overflow menu
-            // We only inflate the overflow menu if the navigation drawer isn't visible
             menuInflater.inflate(R.menu.overflow, menu)
         }
         return result

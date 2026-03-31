@@ -1,25 +1,39 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">CivicEye</string>
+    <string name="welcome_title">Welcome to CivicEye</string>
+    <string name="vision_subtitle">AI-Powered Civic Action Platform</string>
+    
+    <!-- Auth -->
+    <string name="login_btn">Login</string>
+    <string name="register_btn">Register</string>
+    <string name="email_hint">Email Address</string>
+    <string name="password_hint">Password</string>
+    <string name="dont_have_account">Don\'t have an account? Register</string>
+    
+    <!-- Dashboard -->
+    <string name="citizen_dashboard">Citizen Dashboard</string>
+    <string name="officer_portal">Officer Portal</string>
+    <string name="report_issue">Report Issue</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_analytics">Analytics</string>
+    <string name="nav_profile">Profile</string>
 
+    <!-- Error/Success -->
+    <string name="success_submission">Issue reported successfully!</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+
+    <!-- Template Resources -->
+    <string name="fab_content_description">Replace with your own action</string>
+    <string name="nav_header_title">CivicEye User</string>
+    <string name="nav_header_subtitle">user@civiceye.com</string>
+    <string name="nav_header_desc">Navigation header</string>
     <string name="menu_transform">Transform</string>
     <string name="menu_reflow">Reflow</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_settings">Settings</string>
-
-    <string name="lorem_ipsum_title">Lorem Ipsum"</string>
-    <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and
-        typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever
-        since the 1500s, when an unknown printer took a galley of type and scrambled it to make a
-        type specimen book"
-    </string>
-    <string name="fab_content_description">Represents a view to invoke an action</string>
-    <string name="image_view_item_transform_content_description">Represents an image view in the
-        item
-    </string>
+    <string name="image_view_item_transform_content_description">Item Image</string>
+    <string name="menu_home">Home</string>
 </resources>

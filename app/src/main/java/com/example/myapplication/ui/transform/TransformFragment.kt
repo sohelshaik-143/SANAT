@@ -12,16 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.R
-import com.example.myapplication.databinding.FragmentTransformBinding
-import com.example.myapplication.databinding.ItemTransformBinding
+import com.civicguard.R
+import com.civicguard.databinding.FragmentTransformBinding
+import com.civicguard.databinding.ItemTransformBinding
 
-/**
- * Fragment that demonstrates a responsive layout pattern where the format of the content
- * transforms depending on the size of the screen. Specifically this Fragment shows items in
- * the [RecyclerView] using LinearLayoutManager in a small screen
- * and shows items using GridLayoutManager in a large screen.
- */
 class TransformFragment : Fragment() {
 
     private var _binding: FragmentTransformBinding? = null
@@ -35,11 +29,13 @@ class TransformFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val transformViewModel = ViewModelProvider(this).get(TransformViewModel::class.java)
+        val transformViewModel =
+            ViewModelProvider(this).get(TransformViewModel::class.java)
+
         _binding = FragmentTransformBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val recyclerView = binding.recyclerviewTransform
+        val recyclerView: RecyclerView = binding.recyclerviewTransform
         val adapter = TransformAdapter()
         recyclerView.adapter = adapter
         transformViewModel.texts.observe(viewLifecycleOwner) {
@@ -55,7 +51,6 @@ class TransformFragment : Fragment() {
 
     class TransformAdapter :
         ListAdapter<String, TransformViewHolder>(object : DiffUtil.ItemCallback<String>() {
-
             override fun areItemsTheSame(oldItem: String, newItem: String): Boolean =
                 oldItem == newItem
 
@@ -79,11 +74,11 @@ class TransformFragment : Fragment() {
             R.drawable.avatar_13,
             R.drawable.avatar_14,
             R.drawable.avatar_15,
-            R.drawable.avatar_16,
+            R.drawable.avatar_16
         )
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransformViewHolder {
-            val binding = ItemTransformBinding.inflate(LayoutInflater.from(parent.context))
+            val binding = ItemTransformBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return TransformViewHolder(binding)
         }
 
@@ -97,7 +92,6 @@ class TransformFragment : Fragment() {
 
     class TransformViewHolder(binding: ItemTransformBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
         val imageView: ImageView = binding.imageViewItemTransform
         val textView: TextView = binding.textViewItemTransform
     }
